@@ -8,7 +8,6 @@
     <script src='https://d3js.org/d3.v5.min.js'></script>
   </head>
   <body>
-    <svg width=300 height=300></svg>
     <script>
       const accidents_fatal_hullloss = await d3.csv('accidents_fatal_hull-loss.csv');
       const distance_roundtrip_airfare_US = await d3.csv('distance_roundtrip_airfare_US.csv');
@@ -18,6 +17,16 @@
       const hijackings = await d3.csv('hijackings.csv');
       const assengers_carried = await d3.csv('passengers_carried.csv');
       const roundtrip_airfare_US = await d3.csv('roundtrip_airfare_US.csv');
+      var margin_top = 50;
+      var margin_bottom = 50;
+      var margin_left = 50;
+      var margin_right = 50;
+      var width = window.innerWidth - (margin_left + margin_right);
+      var height = window.innerHeight - (margin_top + margin_bottom);
+      var svg = d3.select("body")
+      .append("svg").attr("width", width + margin_left + margin_right)
+      .attr("height", height + margin_top + margin_bottom).append("g")
+      .attr("transform", "translate("+margin_left+","+margin_top+")");
     </script>
   </body>
 </html>
