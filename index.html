@@ -7,13 +7,17 @@
     <meta name="author" content="James F. Coffey">
     <script src='https://d3js.org/d3.v5.min.js'></script>
   </head>
-  <body onload='init()'>
+  <body>
     <svg width=300 height=300></svg>
     <script>
-    async function init() {
       const accidents_fatal_hullloss = await d3.csv('accidents_fatal_hull-loss.csv');
-      console.log(accidents_fatal_hullloss);
-    }
+      const distance_roundtrip_airfare_US = await d3.csv('distance_roundtrip_airfare_US.csv');
+      const fatalities_flight_training = await d3.csv('fatalities_flight_training.csv');
+      const fatalities_hijacking = await d3.csv('fatalities_hijacking.csv');
+      const fatalities_hullloss = await d3.csv('fatalities_hull-loss.csv');
+      const hijackings = await d3.csv('hijackings.csv');
+      const assengers_carried = await d3.csv('passengers_carried.csv');
+      const roundtrip_airfare_US = await d3.csv('roundtrip_airfare_US.csv');
     </script>
   </body>
 </html>
