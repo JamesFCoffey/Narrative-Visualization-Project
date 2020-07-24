@@ -9,6 +9,10 @@
   </head>
   <body onload='init()'>
     <svg width=300 height=300></svg>
-    <script></script>
+    <script>
+    async function init() {
+      const accidents_fatal_hullloss = await d3.csv('accidents_fatal_hull-loss.csv');
+      console.log(accidents_fatal_hullloss);
+    </script>
   </body>
 </html>
