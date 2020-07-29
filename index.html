@@ -85,7 +85,7 @@
         var fatalities_hull_loss = fatalities_hull_loss.filter(function(d){return d.year <= 2017;});
         var fatalities_hull_loss = fatalities_hull_loss.filter(function(d){return d.year >= 1970;});
         fatalities_hull_loss.forEach(function(d,i) {
-          d.value =  d.value / passengers_carried.value;
+          d.value =  passengers_carried.value / d.value;
         });
         console.log(fatalities_hull_loss);
         console.log(passengers_carried);
