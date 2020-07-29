@@ -79,6 +79,13 @@
       <p>Sources: HumanProgress.org</p>
     </div>
     <script>
+      async function init() {
+        var fatalities_hull_loss = await d3.csv('fatalities_hull-loss.csv');
+        var passengers_carried = awawit d3.csv('passengers_carried.csv');
+        console.log(fatalities_hull_loss);
+        console.log(passengers_carried);
+      };
+        
       // load data
       var data = [
         {"year": 1970, "value": 4751.299401},
@@ -131,21 +138,6 @@
         {"year": 2017, "value": 14.82840742}
       ]
       
-      var fatalities_hull_loss = d3.csv('fatalities_hull-loss.csv', function(d) {
-        return {
-          year : +d.year,
-    value : +d.value
-        };
-      });
-      var passengers_carried = d3.csv('passengers_carried.csv', function(d) {
-        return {
-          year : +d.year,
-    value : +d.value
-        };
-      });
-      console.log(fatalities_hull_loss);
-      console.log(passengers_carried);
-
       var margin = 50;
       var width = 960;
       var height = 600;
