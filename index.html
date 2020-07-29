@@ -82,7 +82,7 @@
       async function init() {
         var fatalities_hull_loss = await d3.csv('fatalities_hull-loss.csv');
         var passengers_carried = await d3.csv('passengers_carried.csv');
-        var fatalities_hull_loss = fatalities_hull_loss.filter(function(d) { return d.year <= 2017; });
+        var fatalities_hull_loss = fatalities_hull_loss.filter(function(d) { return 1970 <= d.year <= 2017; });
         console.log(fatalities_hull_loss);
         console.log(passengers_carried);
       };
