@@ -79,21 +79,6 @@
       <p>Sources: HumanProgress.org</p>
     </div>
     <script>
-      async function init() {
-        var fatalities_hull_loss = await d3.csv('fatalities_hull-loss.csv');
-        var passengers_carried = await d3.csv('passengers_carried.csv');
-        var fatalities_hull_loss = fatalities_hull_loss.filter(function(d){return d.year <= 2017;});
-        var fatalities_hull_loss = fatalities_hull_loss.filter(function(d){return d.year >= 1970;});
-        fatalities_hull_loss.forEach(function(d,i) {
-          d.value =  passengers_carried.value / d.value;
-        });
-        console.log(fatalities_hull_loss);
-        console.log(passengers_carried);
-      };
-      
-      // load data
-      init()
-      
       // load data
       var data = [
         {"year": 1970, "value": 4751.299401},
@@ -170,7 +155,7 @@
       .attr("y", height + 40).text("Year");
       chart.append("text").attr("text-anchor", "middle").attr("transform", "rotate(-90)")
       .attr("x", - height / 2).attr("y", -margin-10).attr("dy", "1em")
-      .text("Airliner Hull-loss Accident Fatalities per Million Passengers");
+      .text("Airliner Hull-loss Accident Fatalities per Billion Passengers");
 
       // add line
       var line = chart.selectAll(".line").data([data]);
@@ -213,7 +198,7 @@
         cursor.attr("cx", x(tooltip_data.year)).attr("cy", y(tooltip_data.value));
         tooltip_text_1.html("Year: "+tooltip_data.year)
           .attr("x", x(tooltip_data.year)+10-140).attr("y", y(tooltip_data.value)+15-50);
-        tooltip_text_2.html("Rate (per M): "+d3.format("d")(tooltip_data.value))
+        tooltip_text_2.html("Rate (per B): "+d3.format("d")(tooltip_data.value))
           .attr("x", x(tooltip_data.year)+10-140).attr("y", y(tooltip_data.value)+35-50);
       })
       .on("mouseout", function(){
