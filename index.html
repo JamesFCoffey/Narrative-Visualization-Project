@@ -131,8 +131,14 @@
         {"year": 2017, "value": 14.82840742}
       ]
       
-      var fatalities_hull_loss = d3.csv('fatalities_hull-loss.csv').then(function(data) {console.log(data[0]);});
-      var passengers_carried = d3.csv('passengers_carried.csv').then(function(data) {console.log(data[0]);});
+      var fatalities_hull_loss = d3.csv('fatalities_hull-loss.csv').then(function(data) {
+        d.year = +d.year;
+        d.value = +d.value;
+        });
+      var passengers_carried = d3.csv('passengers_carried.csv').then(function(data) {
+        d.year = +d.year;
+        d.value = +d.value;
+        });
       console.log(fatalities_hull_loss);
       console.log(passengers_carried);
 
