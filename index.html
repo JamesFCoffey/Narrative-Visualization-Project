@@ -6,27 +6,459 @@
     <meta name="description" content="Narrative Visualization Project for CS 498: Data Visualization at the University of Illinois at Urbana-Champaign">
     <meta name="author" content="James F. Coffey">
     <script src='https://d3js.org/d3.v5.min.js'></script>
+    <style>
+    #top {
+      position: absolute;
+      left: 20px;
+      top: 10px;
+    }
+    #buttondiv {
+      position: absolute;
+      left: 20px;
+      top: 130px;
+    }
+    #buttondiv button {
+      background-color: lightgrey;
+      float: left;
+    }
+    #buttondiv button:hover {
+      background-color: grey;
+    }
+    #slidecaption {
+      position: absolute;
+      left: 20px;
+      top: 150px;
+      width: 180px;
+    }
+    svg {
+      position: absolute;
+      left: 200px;
+      top: 100px;
+    }
+    #slider {
+      width: 971px;
+    }
+    #sliderlabel {
+      position: absolute;
+      left: 472px;
+      top: 25px;
+    }
+    #sliderdiv {
+      position: absolute;
+      left: 323px;
+      top: 795px;
+    }
+    #sources {
+      position: absolute;
+      left: 20px;
+      top: 800px;
+    }
+    </style>
   </head>
   <body>
+    <div id="top">
+      <h1>Air Transport Progress</h1>
+      <h2>Air transportation around the world has become safer despite notable tragedies.</h2>
+    </div>
+    <div id="buttondiv">
+      <button onclick="slide_1()">1</button>
+      <button onclick="slide_2()">2</button>
+      <button onclick="slide_3()">3</button>
+      <button onclick="next()" style="font-weight:bold;">NEXT</button>
+    </div>
+    <div id="slidecaption">
+      <h3 id="slidecaptiontitle"></h3>
+      <p id="slidecaptiontext"></p>
+    </div>
+    <svg></svg>
+    <div id="sliderdiv">
+      <input type="range" id="slider" min="1970" max="2017" step="1">
+      <label for="year" id="sliderlabel"></label>
+    </div>
+    <div id="sources">
+      <p>Sources: HumanProgress.org</p>
+    </div>
     <script>
-      const accidents_fatal_hullloss = await d3.csv('accidents_fatal_hull-loss.csv');
-      const distance_roundtrip_airfare_US = await d3.csv('distance_roundtrip_airfare_US.csv');
-      const fatalities_flight_training = await d3.csv('fatalities_flight_training.csv');
-      const fatalities_hijacking = await d3.csv('fatalities_hijacking.csv');
-      const fatalities_hullloss = await d3.csv('fatalities_hull-loss.csv');
-      const hijackings = await d3.csv('hijackings.csv');
-      const assengers_carried = await d3.csv('passengers_carried.csv');
-      const roundtrip_airfare_US = await d3.csv('roundtrip_airfare_US.csv');
-      var margin_top = 50;
-      var margin_bottom = 50;
-      var margin_left = 50;
-      var margin_right = 50;
-      var width = window.innerWidth - (margin_left + margin_right);
-      var height = window.innerHeight - (margin_top + margin_bottom);
-      var svg = d3.select("body")
-      .append("svg").attr("width", width + margin_left + margin_right)
-      .attr("height", height + margin_top + margin_bottom).append("g")
-      .attr("transform", "translate("+margin_left+","+margin_top+")");
+      // load data
+      var data = [
+        {"year": 1970, "value": 4751.299401},
+        {"year": 1971, "value": 4321.407744},
+        {"year": 1972, "value": 6491.317959},
+        {"year": 1973, "value": 5050.155414},
+        {"year": 1974, "value": 4734.709074},
+        {"year": 1975, "value": 2755.181001},
+        {"year": 1976, "value": 3448.689591},
+        {"year": 1977, "value": 3218.583355},
+        {"year": 1978, "value": 2185.422401},
+        {"year": 1979, "value": 2739.047435},
+        {"year": 1980, "value": 2025.32312},
+        {"year": 1981, "value": 1415.817254},
+        {"year": 1982, "value": 1795.312638},
+        {"year": 1983, "value": 1258.207549},
+        {"year": 1984, "value": 922.979935},
+        {"year": 1985, "value": 2566.400493},
+        {"year": 1986, "value": 969.6244134},
+        {"year": 1987, "value": 1225.633619},
+        {"year": 1988, "value": 1202.437148},
+        {"year": 1989, "value": 1580.539149},
+        {"year": 1990, "value": 684.8936737},
+        {"year": 1991, "value": 1013.035147},
+        {"year": 1992, "value": 1347.957518},
+        {"year": 1993, "value": 992.7641883},
+        {"year": 1994, "value": 1177.392694},
+        {"year": 1995, "value": 926.4009093},
+        {"year": 1996, "value": 1324.980655},
+        {"year": 1997, "value": 798.5682444},
+        {"year": 1998, "value": 811.8820928},
+        {"year": 1999, "value": 305.9677212},
+        {"year": 2000, "value": 685.7560474},
+        {"year": 2001, "value": 483.920601},
+        {"year": 2002, "value": 683.2964669},
+        {"year": 2003, "value": 422.1438067},
+        {"year": 2004, "value": 243.0249093},
+        {"year": 2005, "value": 545.7986504},
+        {"year": 2006, "value": 436.6888298},
+        {"year": 2007, "value": 349.9104747},
+        {"year": 2008, "value": 266.2779688},
+        {"year": 2009, "value": 337.8185343},
+        {"year": 2010, "value": 361.3819778},
+        {"year": 2011, "value": 189.4054282},
+        {"year": 2012, "value": 164.1295707},
+        {"year": 2013, "value": 86.93441159},
+        {"year": 2014, "value": 214.111438},
+        {"year": 2015, "value": 53.65675881},
+        {"year": 2016, "value": 69.63371242},
+        {"year": 2017, "value": 14.82840742}
+      ]
+
+      var margin = 50;
+      var width = 960;
+      var height = 600;
+
+      // append the svg object to the body of the page
+      var chart = d3.select("svg")
+      .attr("width", width + 2 * margin + 80)
+      .attr("height", height +  2 * margin)
+      .append("g").attr("transform","translate("+(80+margin)+","+margin+")");
+
+      // define scales
+      var x = d3.scaleLinear().range([0,width]).domain([d3.min(data, function(d){return d.year;}),
+        d3.max(data, function(d){return d.year;})]);
+      var y = d3.scaleLinear().range([height, 0]).domain([0, d3.max(data, function(d){return d.value;})]);
+
+      // create axes
+      chart.append("g").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).tickFormat(d3.format("d")));
+      chart.append("g").attr("transform", "translate(0,0)").call(d3.axisLeft(y).tickFormat(d3.format(".2s")));
+
+      // add axis labels
+      chart.append("text").attr("text-anchor", "middle").attr("x", width / 2)
+      .attr("y", height + 40).text("Year");
+      chart.append("text").attr("text-anchor", "middle").attr("transform", "rotate(-90)")
+      .attr("x", - height / 2).attr("y", -margin-10).attr("dy", "1em")
+      .text("Airliner Hull-loss Accident Fatalities per Million Passengers");
+
+      // add line
+      var line = chart.selectAll(".line").data([data]);
+      line.enter().append("path").attr("class","line")
+      .attr("d", d3.line().x(function(d){return x(d.year);})
+      .y(function(d){return y(d.value);})).attr("stroke", "orange")
+      .attr("stroke-width", 5).attr("fill", "none");
+
+      // add box for tooltip
+      var tooltip = chart.append("g").append("rect").attr("width", 140)
+      .attr("height", 50).attr("fill","white").attr("stroke", "black")
+      .attr("rx", 10).style("opacity", 0);
+
+      // add curor to highlight point described in tooltip
+      var cursor = chart.append("g").append("circle").attr("r", 3).style("opacity", 0);
+
+      // add two lines of text in the tooltip
+      var tooltip_text_1 = chart.append("g").append("text").attr("text-anchor", "left")
+      .attr("alignment-baseline", "middle").style("opacity", 0);
+      var tooltip_text_2 = chart.append("g").append("text").attr("text-anchor", "left")
+      .attr("alignment-baseline", "middle").style("opacity", 0);
+
+      // create triggers for tootip
+      chart.selectAll("rect").data(data).enter().append("rect")
+      .attr("width", width).attr("height",height).style("fill","none")
+      .style("pointer-events", "all")
+      .on("mouseover",
+      function(){
+        tooltip.style("opacity",1);
+        cursor.style("opacity",1);
+        tooltip_text_1.style("opacity",1);
+        tooltip_text_2.style("opacity",1);
+      })
+      .on('mousemove', function(d){
+        var x_pos = x.invert(d3.mouse(this)[0]);
+        var bisect = d3.bisector(function(d){return d.year;}).left;
+        var i = bisect(data, x_pos, 1);
+        tooltip_data = data[i];
+        tooltip.attr("x", x(tooltip_data.year)-140).attr("y", y(tooltip_data.value)-50);
+        cursor.attr("cx", x(tooltip_data.year)).attr("cy", y(tooltip_data.value));
+        tooltip_text_1.html("Year: "+tooltip_data.year)
+          .attr("x", x(tooltip_data.year)+10-140).attr("y", y(tooltip_data.value)+15-50);
+        tooltip_text_2.html("Rate (per M): "+d3.format("d")(tooltip_data.value))
+          .attr("x", x(tooltip_data.year)+10-140).attr("y", y(tooltip_data.value)+35-50);
+      })
+      .on("mouseout", function(){
+        tooltip.style("opacity",0);
+        cursor.style("opacity",0);
+        tooltip_text_1.style("opacity",0);
+        tooltip_text_2.style("opacity",0);
+      });
+
+      var blocker = chart.append("rect").attr("x", 1).attr("width", width)
+      .attr("y",0).attr("height", height).style("fill","white");
+
+      // create slider
+      d3.select("#slider").on("change", function(d){
+        d3.select("#sliderlabel").html(this.value);
+        blocker.transition().duration(3000).attr("x", x(this.value)+1)
+        .attr("width", width - x(this.value) + 5);
+        ann_1_circle.transition().duration(3000).style("opacity",0);
+        ann_1_line.transition().duration(3000).style("opacity",0);
+        ann_1_text_1.transition().duration(3000).style("opacity",0);
+        ann_1_text_2.transition().duration(3000).style("opacity",0);
+        ann_1_text_3.transition().duration(3000).style("opacity",0);
+        ann_1_text_4.transition().duration(3000).style("opacity",0);
+        ann_2_circle.transition().duration(3000).style("opacity",0);
+        ann_2_line.transition().duration(3000).style("opacity",0);
+        ann_2_text_1.transition().duration(3000).style("opacity",0);
+        ann_2_text_2.transition().duration(3000).style("opacity",0);
+        ann_2_text_3.transition().duration(3000).style("opacity",0);
+        ann_2_text_4.transition().duration(3000).style("opacity",0);
+        ann_3_circle.transition().duration(3000).style("opacity",0);
+        ann_3_line.transition().duration(3000).style("opacity",0);
+        ann_3_text_1.transition().duration(3000).style("opacity",0);
+        ann_3_text_2.transition().duration(3000).style("opacity",0);
+        ann_3_text_3.transition().duration(3000).style("opacity",0);
+        ann_3_text_4.transition().duration(3000).style("opacity",0);
+        ann_3_text_5.transition().duration(3000).style("opacity",0);
+        ann_3_text_6.transition().duration(3000).style("opacity",0);
+        ann_4_circle.transition().duration(3000).style("opacity",0);
+        ann_4_line.transition().duration(3000).style("opacity",0);
+        ann_4_text_1.transition().duration(3000).style("opacity",0);
+        ann_4_text_2.transition().duration(3000).style("opacity",0);
+        ann_4_text_3.transition().duration(3000).style("opacity",0);
+        ann_4_text_4.transition().duration(3000).style("opacity",0);
+      });
+
+      // create annotation 1
+      var ann_1_circle = chart.append("circle").attr("r", 10).attr("cx", x(1972))
+      .attr("cy", y(6491)).attr("fill", "red").style("opacity",0);
+      var ann_1_line = chart.append("line").attr("x1", x(1973)).attr("y1", y(6491))
+      .attr("x2", x(1975)).attr("y2", y(6491))
+      .attr("stroke", "black").style("opacity",0);
+      var ann_1_text_1 = chart.append("text").attr("text-anchor", "left").attr("x", x(1976))
+      .attr("y", 0).html("Uruguayan Air Force Flight 571").style("font-weight", "bold")
+      .style("opacity",0);
+      var ann_1_text_2 = chart.append("text").attr("text-anchor", "left").attr("x", x(1976))
+      .attr("y", 17).html("October 13, 1972").style("font-style", "italic")
+      .style("opacity",0);
+      var ann_1_text_3 = chart.append("text").attr("text-anchor", "left").attr("x", x(1976))
+      .attr("y", 34).html("Flight carrying Uruguay's Old Christians Club rugby union")
+      .style("opacity",0);
+      var ann_1_text_4 = chart.append("text").attr("text-anchor", "left").attr("x", x(1976))
+      .attr("y", 51).html("team crashes into Andes Mountains in Argentina.")
+      .style("opacity",0);
+
+      // create annotation 2
+      var ann_2_circle = chart.append("circle").attr("r", 10).attr("cx", x(1985))
+      .attr("cy", y(2566)).attr("fill", "red").style("opacity",0);
+      var ann_2_line = chart.append("line").attr("x1", x(1985)).attr("y1", y(2800))
+      .attr("x2", x(1985)).attr("y2", y(3650))
+      .attr("stroke", "black").style("opacity",0);
+      var ann_2_text_1 = chart.append("text").attr("text-anchor", "left").attr("x", x(1981))
+      .attr("y", 200).html("Japan Airlines Flight 123").style("font-weight", "bold")
+      .style("opacity",0);
+      var ann_2_text_2 = chart.append("text").attr("text-anchor", "left").attr("x", x(1981))
+      .attr("y", 217).html("August 12, 1985").style("font-style", "italic")
+      .style("opacity",0);
+      var ann_2_text_3 = chart.append("text").attr("text-anchor", "left").attr("x", x(1981))
+      .attr("y", 234).html("A Boeing 747 suffers sudden decompression shortly after take-off")
+      .style("opacity",0);
+      var ann_2_text_4 = chart.append("text").attr("text-anchor", "left").attr("x", x(1981))
+      .attr("y", 251).html("and crashes into the area of Mount Takamagahara in Japan.")
+      .style("opacity",0);
+
+      // create annotation 3
+      var ann_3_circle = chart.append("circle").attr("r", 10).attr("cx", x(2001))
+      .attr("cy", y(484)).attr("fill", "red").style("opacity",0);
+      var ann_3_line = chart.append("line").attr("x1", x(2001)).attr("y1", y(700))
+      .attr("x2", x(2001)).attr("y2", y(1500))
+      .attr("stroke", "black").style("opacity",0);
+      var ann_3_text_1 = chart.append("text").attr("text-anchor", "left").attr("x", x(1995))
+      .attr("y", 366).html("September 11th Terrorist Attacks").style("font-weight", "bold")
+      .style("opacity",0);
+      var ann_3_text_2 = chart.append("text").attr("text-anchor", "left").attr("x", x(1995))
+      .attr("y", 383).html("September 11, 2001").style("font-style", "italic")
+      .style("opacity",0);
+      var ann_3_text_3 = chart.append("text").attr("text-anchor", "left").attr("x", x(1995))
+      .attr("y", 400).html("Four commercial airliners are highjacked in the United")
+      .style("opacity",0);
+      var ann_3_text_4 = chart.append("text").attr("text-anchor", "left").attr("x", x(1995))
+      .attr("y", 417).html("States. Two crash into the World Trade Center, one")
+      .style("opacity",0);
+      var ann_3_text_5 = chart.append("text").attr("text-anchor", "left").attr("x", x(1995))
+      .attr("y", 434).html("crashes into the Pentagon, and one crashes in Somerset")
+      .style("opacity",0);
+      var ann_3_text_6 = chart.append("text").attr("text-anchor", "left").attr("x", x(1995))
+      .attr("y", 451).html("County, Pennsylvania.").style("opacity",0);
+
+      // create annotation 4
+      var ann_4_circle = chart.append("circle").attr("r", 10).attr("cx", x(2014))
+      .attr("cy", y(214)).attr("fill", "red").style("opacity",0);
+      var ann_4_line = chart.append("line").attr("x1", x(2014)).attr("y1", y(400))
+      .attr("x2", x(2014)).attr("y2", y(5000))
+      .attr("stroke", "black").style("opacity",0);
+      var ann_4_text_1 = chart.append("text").attr("text-anchor", "left").attr("x", x(2000))
+      .attr("y", 100-20).html("Malaysia Airlines Flight 370").style("font-weight", "bold")
+      .style("opacity",0);
+      var ann_4_text_2 = chart.append("text").attr("text-anchor", "left").attr("x", x(2000))
+      .attr("y", 117-20).html("March 8, 2014 ").style("font-style", "italic")
+      .style("opacity",0);
+      var ann_4_text_3 = chart.append("text").attr("text-anchor", "left").attr("x", x(2000))
+      .attr("y", 134-20).html("Flight disappears from air traffic control radar and")
+      .style("opacity",0);
+      var ann_4_text_4 = chart.append("text").attr("text-anchor", "left").attr("x", x(2000))
+      .attr("y", 151-20).html("presumably crashes into the Indian Ocean.")
+      .style("opacity",0);
+
+      // define slide 1
+      function slide_1(){
+        d3.select("#slider").attr("value", function(d){
+          this.value = 1986;
+          d3.select("#sliderlabel").html(this.value);
+          blocker.transition().duration(3000).attr("x", x(this.value))
+          .attr("width", width - x(this.value) + 5);
+          current_slide = 1;
+          d3.select("#slidecaptiontitle").text("Flight Used to Be More Dangerous");
+          d3.select("#slidecaptiontext").text("A half-century ago, there were far more deaths per million passengers worldwide. The abrupt increase in fatalities early on was due in part to the advent of wider body aircraft. Improved safety brought this down immensely by the mid-1980’s despite notable tragedies.");
+          ann_1_circle.transition().duration(3000).style("opacity",0.5);
+          ann_1_line.transition().duration(3000).style("opacity",1);
+          ann_1_text_1.transition().duration(3000).style("opacity",1);
+          ann_1_text_2.transition().duration(3000).style("opacity",1);
+          ann_1_text_3.transition().duration(3000).style("opacity",1);
+          ann_1_text_4.transition().duration(3000).style("opacity",1);
+          ann_2_circle.transition().duration(3000).style("opacity",0.5);
+          ann_2_line.transition().duration(3000).style("opacity",1);
+          ann_2_text_1.transition().duration(3000).style("opacity",1);
+          ann_2_text_2.transition().duration(3000).style("opacity",1);
+          ann_2_text_3.transition().duration(3000).style("opacity",1);
+          ann_2_text_4.transition().duration(3000).style("opacity",1);
+          ann_3_circle.transition().duration(3000).style("opacity",0);
+          ann_3_line.transition().duration(3000).style("opacity",0);
+          ann_3_text_1.transition().duration(3000).style("opacity",0);
+          ann_3_text_2.transition().duration(3000).style("opacity",0);
+          ann_3_text_3.transition().duration(3000).style("opacity",0);
+          ann_3_text_4.transition().duration(3000).style("opacity",0);
+          ann_3_text_5.transition().duration(3000).style("opacity",0);
+          ann_3_text_6.transition().duration(3000).style("opacity",0);
+          ann_4_circle.transition().duration(3000).style("opacity",0);
+          ann_4_line.transition().duration(3000).style("opacity",0);
+          ann_4_text_1.transition().duration(3000).style("opacity",0);
+          ann_4_text_2.transition().duration(3000).style("opacity",0);
+          ann_4_text_3.transition().duration(3000).style("opacity",0);
+          ann_4_text_4.transition().duration(3000).style("opacity",0);
+        });
+      };
+
+      // define slide 2
+      function slide_2(){
+        d3.select("#slider").attr("value", function(d){
+          this.value = 2002;
+          d3.select("#sliderlabel").html(this.value);
+          blocker.transition().duration(3000).attr("x", x(this.value))
+          .attr("width", width - x(this.value) + 5);
+          current_slide = 2;
+          d3.select("#slidecaptiontitle").text("Safety Improvements Outpace Tragic Events");
+          d3.select("#slidecaptiontext").text("Air travel continued to become safer around the globe into the new millennium. The improvements to aircraft design and flight operations combined with the increase in the number of passengers carried around the world far outpaced even the most tragic events.");
+          ann_1_circle.transition().duration(3000).style("opacity",0.5);
+          ann_1_line.transition().duration(3000).style("opacity",1);
+          ann_1_text_1.transition().duration(3000).style("opacity",1);
+          ann_1_text_2.transition().duration(3000).style("opacity",1);
+          ann_1_text_3.transition().duration(3000).style("opacity",1);
+          ann_1_text_4.transition().duration(3000).style("opacity",1);
+          ann_2_circle.transition().duration(3000).style("opacity",0.5);
+          ann_2_line.transition().duration(3000).style("opacity",1);
+          ann_2_text_1.transition().duration(3000).style("opacity",1);
+          ann_2_text_2.transition().duration(3000).style("opacity",1);
+          ann_2_text_3.transition().duration(3000).style("opacity",1);
+          ann_2_text_4.transition().duration(3000).style("opacity",1);
+          ann_3_circle.transition().duration(3000).style("opacity",0.5);
+          ann_3_line.transition().duration(3000).style("opacity",1);
+          ann_3_text_1.transition().duration(3000).style("opacity",1);
+          ann_3_text_2.transition().duration(3000).style("opacity",1);
+          ann_3_text_3.transition().duration(3000).style("opacity",1);
+          ann_3_text_4.transition().duration(3000).style("opacity",1);
+          ann_3_text_5.transition().duration(3000).style("opacity",1);
+          ann_3_text_6.transition().duration(3000).style("opacity",1);
+          ann_4_circle.transition().duration(3000).style("opacity",0);
+          ann_4_line.transition().duration(3000).style("opacity",0);
+          ann_4_text_1.transition().duration(3000).style("opacity",0);
+          ann_4_text_2.transition().duration(3000).style("opacity",0);
+          ann_4_text_3.transition().duration(3000).style("opacity",0);
+          ann_4_text_4.transition().duration(3000).style("opacity",0);
+        });
+      };
+
+      // define slide 3
+      function slide_3(){
+        d3.select("#slider").attr("value", function(d){
+          this.value = 2017;
+          d3.select("#sliderlabel").html(this.value);
+          blocker.transition().duration(3000).attr("x", x(this.value))
+          .attr("width", width - x(this.value) + 5);
+          current_slide = 3;
+          d3.select("#slidecaptiontitle").text("The Mundane Matters");
+          d3.select("#slidecaptiontext").text("The mundane yet heroic effort of the air transport industry has made immense progress in making air travel safer than it has in the past. While it is fully appropriate to mourn the loss of people involved in air travel disasters, the risk involved with air travel should be viewed in the context of comparative risk. The improvement in safety along with the ubiquity of air travel means that even the worst disasters do not raise risk to historical levels.");
+          ann_1_circle.transition().duration(3000).style("opacity",0.5);
+          ann_1_line.transition().duration(3000).style("opacity",1);
+          ann_1_text_1.transition().duration(3000).style("opacity",1);
+          ann_1_text_2.transition().duration(3000).style("opacity",1);
+          ann_1_text_3.transition().duration(3000).style("opacity",1);
+          ann_1_text_4.transition().duration(3000).style("opacity",1);
+          ann_2_circle.transition().duration(3000).style("opacity",0.5);
+          ann_2_line.transition().duration(3000).style("opacity",1);
+          ann_2_text_1.transition().duration(3000).style("opacity",1);
+          ann_2_text_2.transition().duration(3000).style("opacity",1);
+          ann_2_text_3.transition().duration(3000).style("opacity",1);
+          ann_2_text_4.transition().duration(3000).style("opacity",1);
+          ann_3_circle.transition().duration(3000).style("opacity",0.5);
+          ann_3_line.transition().duration(3000).style("opacity",1);
+          ann_3_text_1.transition().duration(3000).style("opacity",1);
+          ann_3_text_2.transition().duration(3000).style("opacity",1);
+          ann_3_text_3.transition().duration(3000).style("opacity",1);
+          ann_3_text_4.transition().duration(3000).style("opacity",1);
+          ann_3_text_5.transition().duration(3000).style("opacity",1);
+          ann_3_text_6.transition().duration(3000).style("opacity",1);
+          ann_4_circle.transition().duration(3000).style("opacity",0.5);
+          ann_4_line.transition().duration(3000).style("opacity",1);
+          ann_4_text_1.transition().duration(3000).style("opacity",1);
+          ann_4_text_2.transition().duration(3000).style("opacity",1);
+          ann_4_text_3.transition().duration(3000).style("opacity",1);
+          ann_4_text_4.transition().duration(3000).style("opacity",1);
+        });
+      };
+
+      // store current slider
+      var current_slide = 1;
+
+      // next button action
+      function next(){
+        if (current_slide == 1) {
+          slide_2();
+        } else if (current_slide == 2) {
+          slide_3();
+        } else {
+          slide_1();
+        }
+      };
+
+      // initialize the visualization
+      slide_1()
+
     </script>
   </body>
 </html>
